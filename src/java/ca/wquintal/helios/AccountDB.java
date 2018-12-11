@@ -93,6 +93,7 @@ public class AccountDB extends MyBD {
 
 	}
 
+	private static final String QUERY_isusernameexists	= "SELECT COUNT(*) AS nbr FROM account WHERE username = ?";
 	private static final String QUERY_isadmincreate 	= "SELECT COUNT(*) AS nbr FROM account WHERE username='admin'";
 	private static final String QUERY_createaccount 	= "INSERT INTO account (username,role,psw) VALUES (?,?,?)";
 
@@ -105,10 +106,11 @@ public class AccountDB extends MyBD {
 	}
 	
 	// Indique si le code administrateur existe
-	public Boolean DoesAdminExists() throws SQLException {
+	public Boolean DoesAccountExists(String name) throws SQLException {
 		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery(QUERY_isadmincreate);
-		// si le resultset est null l'account admin n'existe pas
+		PreparedStatement statement = connection.prepareStatement(QUERY_isusernameexists);
+		statement.setString(1, name);
+		ResultSet rs = statement.executeQuery();
 		if(!rs.first()) return false;
 		int nbrItem = rs.getInt("nbr");
 		return nbrItem > 0;
@@ -116,16 +118,21 @@ public class AccountDB extends MyBD {
 
 	// CreateAdminAccount crée l'account administrateur s'il n'existe pas deja
 	public String CreateAdminAccount(String password) throws SQLException, AccountAlreadyExistsException, Exception {
-		if(DoesAdminExists()) throw new AccountAlreadyExistsException();
+		return CreateAccount("admin",password,User.ROLE_ADMIN);
+	}
+	
+	
+	public String CreateAccount(String username, String password,int role) throws SQLException, AccountAlreadyExistsException, Exception {
+		if(DoesAccountExists(username)) throw new AccountAlreadyExistsException();
 		// First crée un hashing PBKDF2 pour entreposer le mdp
 		String salterpw = Password.getSaltedHash(password);
 		PreparedStatement statement = connection.prepareStatement(QUERY_createaccount);
-		statement.setString(1, "admin");
-		statement.setInt(2, 99);
+		statement.setString(1, username);
+		statement.setInt(2, role);
 		statement.setString(3, salterpw);
 		statement.executeQuery();
 		connection.commit();
-		return LoginUser("admin",password);
+		return LoginUser(username,password);
 	}
 
 	// Login un user et lui retourne sont token d'identification

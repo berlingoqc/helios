@@ -1,16 +1,15 @@
 <%-- 
-    Document   : login
-    Created on : Oct 16, 2018, 12:50:42 PM
+    Document   : new
+    Created on : 11-Dec-2018, 11:57:57 AM
     Author     : wq
 --%>
-
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Account Login</title>
+        <title>Account New</title>
 	<jsp:include page="/shared/import.jsp" />
 	<%
 		// Valide si j'ai deja un token et me renvoie a la place
@@ -121,6 +120,7 @@
 			$("#submit").on('click',function() {
 				var user = $("#user").val();
 				var psw = $("#password").val();
+				var conf_psw = $("#confirmation_password").val();
 				if(user === "") {
 					$('.error').text("Entrer nom d'utilisateur").fadeIn(400).delay(2000).fadeOut(400);
 					return;
@@ -128,17 +128,29 @@
 				if(psw === "") {
 					$('.error').text("Entrer un mot de passe").fadeIn(400).delay(2000).fadeOut(400);
 					return;
-				} 
+				}
+				if(conf_psw === "" || conf_psw !== psw) {
+					$(".error").text("Confirmation du mot de passe invalide").fadeIn(400).delay(2000).fadeOut(400);
+					return;
+				}
 				$this = $(this);
 				$(this).button('loading');
+				
+				var accout_new = {
+					username: user,
+					password: psw
+				};
+				
+				var json_new = JSON.stringify(accout_new);
+				
 				$.ajax({
-					type: "GET",
+					type: "POST",
 					url: "/helios/api/account",
-					data: "username="+user+"&password="+psw
-					
+					dataType:	"json",
+					data: json_new
 				}).done(function () {
 					// redirige vers index
-					window.location.replace('/helios/index.jsp');
+					window.location.replace('/helios/dashboard.jsp');
 					
 				}).fail(function (xhr, status,err) {
 					var resp = xhr.responseText;
@@ -170,12 +182,14 @@
 					<input class="form-control" type="text" name="user" id="user" required="true" placeholder="Utilisateur">
 				</div>
 				<div id="divpassword" class="form-group">
-				    <input class="form-control" type="password" name="password" id="password" required="true" placeholder="Mot de passe">
+				    <input class="form-control" type="password" name="password" id="password" required="true" placeholder="Mot de passe"
+				</div>
+				<div id="divpassword" class="form-group">
+				    <input class="form-control" type="password" name="password" id="confirmation_password" required="true" placeholder="Confirmation">
 				</div>
 				<div class="form-group">
-					<button id="submit" class="btn btn-primary btn-block" data-loading-text="<i class='fa fa-spin fa-spinner'></i>" type="button">Connection</button>
+					<button id="submit" class="btn btn-primary btn-block" data-loading-text="<i class='fa fa-spin fa-spinner'></i>" type="button">Confirmer</button>
 				</div>
-				<a id="forgot" class="forgot">Oubliez vos informations de connection?</a>
 			</form>
 		</div>
 		<div class="error" style='display:none'></div>

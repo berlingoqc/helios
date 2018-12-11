@@ -10,7 +10,8 @@ package ca.wquintal.helios;
  * @author wq
  */
 public class User {
-
+	public static final int ROLE_ADMIN = 2;
+	public static final int ROLE_NORMAL = 1;
 	public String getUsername() {
 		return username;
 	}
@@ -37,7 +38,11 @@ public class User {
 	private String username;
 	private String password;
 	private int role;
-	
+	public User(String username, String passsword) {
+		this.username = username;
+		this.password = password;
+		this.role = ROLE_NORMAL;
+	}
 	public User(String username, String password, int role) {
 		this.username = username;
 		this.password = password;

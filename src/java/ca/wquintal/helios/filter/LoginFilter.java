@@ -53,54 +53,96 @@ public class LoginFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse)response;
 		
 		String servletPath = req.getServletPath();
+				// permet d'acceder au page public
+				
+				
 		
+
 		if(!isConfigurate) {
+
 			// Initialize mon SettingsDB s'il n'existe pas redirige vers une page pour
+
 			// crée les settings
+
 			if(servletPath.matches("/api/init/.*")) {
+
 				chain.doFilter(request, response);
+
 				return;
+
 			}
+
 			SettingsDB set = new SettingsDB();
+
 			if(!set.OpenConfig()) {
+
 				// mets un cookie pour dire qu'il n'est pas configurer
+
 				Cookie notset = new Cookie("isconf","false");
+
 				notset.setMaxAge(60*60*10);
+
 				res.addCookie(notset);
+
 				// redirige vers la page
+
 				req.getRequestDispatcher("/init/index.jsp").forward(request,response);
+
 				return;
+
 			}
+
 			// si la bd est configurer regarde que l'account admin soit bien crée si on redirige vers la page de config admin
+
 			try {
+
 				AccountDB db = AccountDB.getAccountDBInstance();
-				if(db != null && !db.DoesAdminExists()) {
+
+				if(db != null && !db.DoesAccountExists("admin")) {
+
 					// admin n'est pas encore configurer on renvoie vers la page de configuration
+
 					req.getRequestDispatcher("/init/setup.jsp").forward(request, response);
+
 					return;
+
 				}
+
 			} catch(SQLException | ClassNotFoundException e) {
+
 				// affiche un message d'erreur pour dire que les tables ne sont pas
+
 				// crée dans la bd
+
 				response.getWriter().append(e.getMessage()).flush();
+
 				req.getRequestDispatcher("/public/oups.jsp").forward(request, response);
+
 				return;
+
 			}
+
 			// Si tout ca est beau, on va regarder si connecter sinon redirige vers login
+
 			isConfigurate = true;
-		}
-		
-		
+
+		}		
+
 		// Si on va vers les logions on laisse continuer
-		if(servletPath.equals("/account/login") || servletPath.equals("/api/account")) {
+		if(servletPath.startsWith("/account")) {
 			chain.doFilter(request, response);
 			return;
 		}
-		// permet d'acceder au page public
-		if(servletPath.matches("/public/.*")) {
+		if(servletPath.matches("/index.html") || servletPath.matches("/index.jsp")) {
 			chain.doFilter(request, response);
 			return;
 		}
+		
+		if(servletPath.startsWith("/api/account")) {
+			chain.doFilter(request,response);
+			return;
+		}
+		
 	
 		// si on n'a pas de identity on est retourner a la page des logins
 		String tkAttr = (String)req.getSession().getAttribute("identity");

@@ -15,7 +15,8 @@
 	<%
 		// Valide si j'ai deja un token et me renvoie a la place
 		// indiquer par redirectTo
-	
+		// Get la session la reinitialise et redirige vers login
+
 	%>
 	
 	<style>
@@ -176,6 +177,7 @@
 					<button id="submit" class="btn btn-primary btn-block" data-loading-text="<i class='fa fa-spin fa-spinner'></i>" type="button">Connection</button>
 				</div>
 				<a id="forgot" class="forgot">Oubliez vos informations de connection?</a>
+				<a id="newaccount" href="/helios/account/new.jsp" class="forgot">Pas encore de compte ?</a>
 			</form>
 		</div>
 		<div class="error" style='display:none'></div>

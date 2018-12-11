@@ -7,6 +7,9 @@ package ca.wquintal.helios.api;
 
 import ca.wquintal.helios.api.BaseServlet;
 import ca.wquintal.helios.AccountDB;
+import ca.wquintal.helios.MyBD;
+import ca.wquintal.helios.SettingsDB;
+import ca.wquintal.helios.User;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,10 +32,35 @@ public class account extends BaseServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
-		String psw = request.getParameter("password");
-		String old = request.getParameter("old");
-
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		User u = null;
+		String msg="";
+		try {
+			u = (User) parseDataJson(request, User.class);
+			response.setStatus(200);
+		} catch(Exception e) {
+			response.setStatus(400);
+			msg = "Erreur parsing json";
+		}
+		if( u != null) {
+			
+		try {
+			db.OpenIfClose();
+		    
+			String tk = db.CreateAccount(u.getUsername(), u.getPassword(), User.ROLE_NORMAL);
+			request.getSession().setAttribute("identity", tk);
+			response.setStatus(200);
+                } catch(Exception e) {
+                    msg = e.getLocalizedMessage();
+                    response.setStatus(400);
+                }
+		
+		}
+		
+		try (PrintWriter out = response.getWriter()) {
+			out.print(msg);
+			out.flush();
+		}
 		
 	}
 	private static final long serialVersionUID = 1L;
@@ -70,11 +98,12 @@ public class account extends BaseServlet {
 			out.write("username");
 		} catch(Exception e) {
 			response.setStatus(400);
+			out.write("Erreur db : "+e.getLocalizedMessage());
 			// envoie vers la page d'erreur
 		
 		}
 	}
-
+	
 
 	/**
 	 * Returns a short description of the servlet.
