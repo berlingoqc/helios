@@ -79,7 +79,14 @@ public class account extends BaseServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
-		
+	
+                // si on recoit le parametre all
+                String get_arg = request.getParameter("mode");
+                if(get_arg != null && !get_arg.isEmpty()) {
+                    // Dans ce cas la on retour la liste des usagers du site web
+                    
+                } 
+            
 		// Get le token d'un utilisateur doit passer username et password
 		String psw = request.getParameter("password");
 		String user = request.getParameter("username");

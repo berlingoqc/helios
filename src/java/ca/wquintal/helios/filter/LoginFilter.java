@@ -7,6 +7,7 @@ package ca.wquintal.helios.filter;
 
 import ca.wquintal.helios.AccountDB;
 import ca.wquintal.helios.SettingsDB;
+import ca.wquintal.helios.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class LoginFilter implements Filter {
 		res.getWriter().append("error="+ex.getMessage()+"&on="+req.getServletPath()).flush();
 		req.getRequestDispatcher("/oups.jsp").forward(req, res);
 	}
+        
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -54,9 +56,6 @@ public class LoginFilter implements Filter {
 		
 		String servletPath = req.getServletPath();
 				// permet d'acceder au page public
-				
-				
-		
 
 		if(!isConfigurate) {
 
@@ -151,6 +150,7 @@ public class LoginFilter implements Filter {
 		} else {
 			// Get notre identiter et valide avec la db qu'il est valide
 			AccountDB db = null;
+                        AccountDB.IdentityToken tk = null;
 			try {
 				db = AccountDB.getAccountDBInstance();
 				db.OpenIfClose();
@@ -160,7 +160,7 @@ public class LoginFilter implements Filter {
 			}
 			
 			try {
-				AccountDB.IdentityToken tk = gson.fromJson(tkAttr, AccountDB.IdentityToken.class);
+				tk = gson.fromJson(tkAttr, AccountDB.IdentityToken.class);
 				if(!db.IsValidUser(tk.getId(), tk.getIdentityHash())) {
 					// le token n'est pas valide va faire la page de denied
 					req.getRequestDispatcher("/account/login.jsp").forward(req, res);
@@ -174,6 +174,13 @@ public class LoginFilter implements Filter {
 				return;
 			}
 			
+                        
+                        // si on n'accede dashboard regarde si on n'est admin et redirige vers
+                        // dashboard admin
+                        if(servletPath.startsWith("/dashboard") && tk.getRole() == User.ROLE_ADMIN) {
+                            req.getRequestDispatcher("/dashboard_admin.jsp").forward(req, res);
+                            return;
+                        }
 
 			// si tout est beau on continue notre chemin
 			if(servletPath.equals("/reset.jsp"))  {

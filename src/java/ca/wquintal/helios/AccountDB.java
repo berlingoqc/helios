@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -99,7 +101,8 @@ public class AccountDB extends MyBD {
 
 	private static final String QUERY_accountlogin 		= "SELECT ID,psw,role FROM account WHERE username = ?";
 	private static final String QUERY_validaccount		= "SELECT * FROM account WHERE ID = ? AND psw = ?";
-
+            
+        private static final String QUERY_listaccout            = "SELECT ID,username,role FROM account";
 
 	public AccountDB(ConnectionInfo info) throws SQLException, ClassNotFoundException {
 		super(info);
@@ -164,6 +167,17 @@ public class AccountDB extends MyBD {
 		ResultSet rs = stmt.executeQuery();
 		return rs.first();
 	}
+        
+        public List<User> getAllUser() throws SQLException {
+            List<User> l = new ArrayList<User>();
+            PreparedStatement ps = connection.prepareStatement(QUERY_listaccout);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                User u = new User();
+           
+            }
+            return l;
+        }
 
 	// Update le mot de passe d'un account, doit pouvoir entrer son ancien mot de passe
 	public void UpdateAccountPassword(int id,String oldpw,String newpw) throws SQLException, 

@@ -38,6 +38,10 @@ public class User {
 	private String username;
 	private String password;
 	private int role;
+        public User() {
+            
+        }
+        
 	public User(String username, String passsword) {
 		this.username = username;
 		this.password = password;

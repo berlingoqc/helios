@@ -16,6 +16,15 @@
 		// Valide si j'ai deja un token et me renvoie a la place
 		// indiquer par redirectTo
 		// Get la session la reinitialise et redirige vers login
+                
+                if(session != null) {
+                    String tk = (String)session.getAttribute("identity");
+                    if(tk != null) {
+                        //RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/helios/dashboard.jsp");
+                        //dispatcher.forward(request,response);
+                        response.sendRedirect("/helios/dashboard.jsp");
+                    }
+                }
 
 	%>
 	
@@ -139,7 +148,7 @@
 					
 				}).done(function () {
 					// redirige vers index
-					window.location.replace('/helios/index.jsp');
+					window.location.replace('/helios/dashboard.jsp');
 					
 				}).fail(function (xhr, status,err) {
 					var resp = xhr.responseText;
