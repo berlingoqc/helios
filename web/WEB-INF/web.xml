@@ -16,6 +16,10 @@
         <servlet-name>account</servlet-name>
         <servlet-class>ca.wquintal.helios.api.account</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>YaseConfigServlet</servlet-name>
+        <servlet-class>ca.wquintal.helios.api.YaseConfigServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>config</servlet-name>
         <url-pattern>/api/init/config</url-pattern>
@@ -23,6 +27,10 @@
     <servlet-mapping>
         <servlet-name>account</servlet-name>
         <url-pattern>/api/account</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>YaseConfigServlet</servlet-name>
+        <url-pattern>/api/yase/config</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

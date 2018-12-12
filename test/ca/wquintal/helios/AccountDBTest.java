@@ -25,7 +25,7 @@ public class AccountDBTest {
 	@Test
 	public void testAdminExists() throws Exception {
 		AccountDB db = new AccountDB(ci);
-		Boolean b = db.DoesAdminExists();
+		Boolean b = db.DoesAccountExists("admin");
 		// Doit retourner false
 		assertEquals(false, b);
 	}
@@ -34,7 +34,7 @@ public class AccountDBTest {
 	public void testCreateAdminAccount() throws Exception {
 		AccountDB db = new AccountDB(ci);
 		db.CreateAdminAccount("petancle");
-		Boolean b = db.DoesAdminExists();
+		Boolean b = db.DoesAccountExists("admin");
 		assertEquals(true, b);
 		
 		
